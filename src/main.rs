@@ -27,10 +27,13 @@ fn main() {
         .add_plugins(MeshPickingPlugin)
         .init_resource::<Materials>()
         .init_resource::<Square>()
-        .add_systems(Startup, setup_cameras)
         .add_systems(
             Startup,
-            ((setup_colors, setup_square), create_board_left).chain(),
+            (
+                (setup_colors, setup_square, setup_cameras),
+                create_board_left,
+            )
+                .chain(),
         )
         .add_systems(Update, (sync_cameras_viewports, print_rays_constructor()))
         .run();
@@ -63,7 +66,7 @@ fn setup_cameras(mut commands: Commands, window_query: Query<&Window>) -> Result
             clear_color: ClearColorConfig::Custom(DARK_GRAY.into()),
             viewport: Some(Viewport {
                 physical_size: UVec2::new(window_size.x / 2, window_size.y),
-                physical_position: UVec2::new(20, 0),
+                physical_position: UVec2::ZERO,
                 ..default()
             }),
             order: 0,
